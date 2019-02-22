@@ -35,7 +35,7 @@ class FileSystem{
         if(self::fileExists($two))
         {
             self::requireFile($two, true);
-            return true;
+            return $two;
         }
         
         return false;

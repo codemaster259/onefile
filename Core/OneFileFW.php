@@ -89,7 +89,6 @@ class FileSystem{
 }
 
 /* For console commands */
-
 class Commander{
     
     private static $commands = [];

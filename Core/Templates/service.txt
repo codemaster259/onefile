@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Services;
+
+use Core\Request;
+
+class {{name}}Service{
+    
+    public static function test()
+    {
+        echo "from ".__METHOD__;
+    }
+}

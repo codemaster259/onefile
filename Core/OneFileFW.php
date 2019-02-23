@@ -98,10 +98,9 @@ class Commander{
     {
         self::$commands[$name] = $callback;
     }
-    
+
     public static function run($args = [])
     {
-        
         //remove filename
         array_shift($args);
         
@@ -158,7 +157,7 @@ class Helper{
         
         echo "</pre>\n";
     }
-    
+
     public static function PATH_INFO()
     {
         return isset($_SERVER['PATH_INFO']) ? "/".ltrim($_SERVER['PATH_INFO'],"/") : isset($_GET['PATH_INFO']) ? "/".ltrim($_GET['PATH_INFO'],"/") : "/";

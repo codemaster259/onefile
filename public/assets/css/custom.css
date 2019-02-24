@@ -57,10 +57,19 @@
 }
 /*LOADER*/
 
+.max-400{
+    max-width: 400px;
+    padding: 0px 10px;
+}
 
-.modal-400{
-    width: 400px;
-    margin: auto;
+.max-500{
+    max-width: 500px;
+    padding: 0px 10px;
+}
+
+.max-600{
+    max-width: 600px;
+    padding: 0px 10px;
 }
 
 #wrapper{

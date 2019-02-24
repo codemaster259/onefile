@@ -9,7 +9,10 @@ require_once CORE_ROOT."Core/OneFileFW.php";
 
 //register autoload
 Core\FileSystem::setRoot(CORE_ROOT);
+//Core\FileSystem::defaultAutoload();
 Core\FileSystem::autoload();
+
+//require CORE_ROOT . '/vendor/autoload.php';
 
 use Core\FileSystem;
 use Core\Helper;
@@ -38,5 +41,6 @@ echo Route::match(PATH_INFO);
 
 if(Request::isAjax()){die();}
 
+//debug(env("App.allowRegister"));
 //debug(Env::get());
 //echo PATH_INFO;

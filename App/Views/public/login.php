@@ -1,6 +1,6 @@
 <div class="container">
     <div class="row">
-        <div class="col-md-6 col-sm-6 automargin">
+        <div class="max-500 automargin">
             <div class="login-panel panel panel-default panel-shadow">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-sign-in fa-fw"></i> Iniciar Sesion</h3>
@@ -16,11 +16,11 @@
                         <img src="" class="center-block" id="captcha_img" style="min-height:50px;"/>
                     </div>
                     <div class="form-group input-group">
-                        <input class="form-control" data-input="alphanum" placeholder="Captcha" name="captcha" id="captcha" type="text" value="">
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="button" id="captcha_reload_btn" title="Recargar Captcha"><i class="fa fa-refresh"></i>
                             </button>
                         </span>
+                        <input class="form-control" data-input="uppercase" placeholder="Captcha" name="captcha" id="captcha" type="text" value="">
                     </div>
                     <div class="form-group">
                         <label class="btn btn-success">
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="panel-footer text-center">
-                    <button class="btn btn-success" id="login_btn">Aceptar</button>
+                    <button class="btn btn-success" id="login_btn">Iniciar Sesion!</button>
                 </div>
             </div>
         </div>

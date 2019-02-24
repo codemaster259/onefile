@@ -23,6 +23,13 @@ class FileSystem{
     {
         self::$ROOT = $root;
     }
+
+    public static function defaultAutoload()
+    {
+        set_include_path(get_include_path().PATH_SEPARATOR.self::$ROOT);
+        spl_autoload_extensions(".php");
+        spl_autoload_register();
+    }
     
     public static function autoload($className = null)
     {
@@ -103,7 +110,6 @@ class Commander{
         //remove filename
         array_shift($args);
         
-        
         //get command name
         $commandName = array_shift($args);
         
@@ -123,6 +129,81 @@ class Commander{
         }
         
         call_user_func($commandFn, $args);
+    }
+
+    public static function parseParameters($args, $params)
+    {
+        $results = [];
+
+        foreach($params as $p)
+        {
+            //echo "check: $p\n";
+            foreach($args as $a)
+            {
+                //echo "- against $a\n";
+                if($required = Commander::isRequired($p))
+                {
+                    $regexR = "#-$required(=|:)(?P<req>[a-zA-Z0-9\_\-\s\.]+)#";
+                    $matches = [];
+                    if(preg_match($regexR, $a, $matches))
+                    {
+                        $results[$required] = $matches['req'];
+                    }
+                }
+    
+                if($optional = Commander::isOptional($p))
+                {
+                    $regexO = "#-$optional(=|:)(?P<opt>[a-zA-Z0-9\_\-\s\.]+)#";
+                    $matches = [];
+                    if(preg_match($regexO, $a, $matches))
+                    {
+                        $results[$required] = $matches['opt'];
+                    }
+                }
+    
+                if(Commander::isFlag($p))
+                {
+                    if("-$p" == $a)
+                    {
+                        $results[$p] = true;
+                    }
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    public static function isFlag($str)
+    {
+        if(preg_match("#(?P<flag>[a-zA-Z]+)#", $str))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function isRequired($str)
+    {
+        $r = [];
+        if(preg_match("#(?P<required>[a-zA-Z]+):#", $str, $r))
+        {
+            return $r['required'];
+        }
+
+        return false;
+    }
+
+    public static function isOptional($str)
+    {
+        $r = [];
+        if(preg_match("#(?P<required>[a-zA-Z]+)::#", $str, $r))
+        {
+            return $r['required'];
+        }
+
+        return false;
     }
 }
 
@@ -282,7 +363,26 @@ class Env{
             return self::$env;
         }
         
-        return isset(self::$env[$key]) ? (self::$env[$key]) : $def;
+        return self::deep_env($key, $def);
+    }
+
+    protected static function deep_env($key, $def = null)
+    {
+        $temp = explode(".", $key);
+
+        $kv = self::$env;
+
+        foreach($temp as $subkey)
+        {
+            if(!isset($kv[$subkey]))
+            {
+                return $def;
+            }
+
+            $kv = $kv[$subkey];
+        }
+
+        return $kv;
     }
 }
 
@@ -290,26 +390,46 @@ class Env{
 class Route{
     
     private static $routes = [];
+    private static $filters = [];
 
-    public static function add($url, $data)
+    public static function add($url, $data, $filters = [])
     {
-        self::$routes[$url] = $data;
+        $pattern = self::makePattern($url);
+
+        if($pattern)
+        {
+            self::$routes[$pattern] = [
+                "data" => $data,
+                "filters" => $filters,
+            ];
+        }else{
+            die("Route $url is malformed");
+        }
+    }
+
+    public static function filter($name, $test, $fail = null)
+    {
+        self::$filters[$name] = [
+            "test" => $test,
+            "fail" => $fail,
+        ];
     }
     
     public static function match($url = "/")
     {
         $found = null;
+        $filters = [];
         
-        foreach(self::$routes as $route => $destiny)
+        foreach(self::$routes as $pattern => $destiny)
         {
             $matches = [];
-            
-            $pattern = self::makePattern($route);
             
             if(preg_match($pattern, $url, $matches))
             {
                 $matches = self::assoc($matches);
-                $found = $destiny;
+
+                $found = $destiny['data'];
+                $filters = $destiny['filters'];
                 Request::setParams($matches);
                 break;
             }
@@ -318,6 +438,22 @@ class Route{
         if(!$found)
         {
             return Response::html("<h1>Error:</h1><p>Pagina <b>{$url}</b> no encontrada (R)!</p>", 404);
+        }
+
+        //filters
+        foreach($filters as $name)
+        {
+            $f = self::getFilter($name);
+
+            if($f)
+            {
+                $pass = call_user_func($f['test'], $url);
+
+                if(!$pass)
+                {
+                    return call_user_func($f['fail']);
+                }
+            }
         }
         
         if(is_string($found) && self::isClass($found))
@@ -353,7 +489,7 @@ class Route{
     {
         $final = "";
     
-        if(preg_match('/[^:\/\*_{}()a-zA-Z\d]/', $pattern))
+        if(preg_match('#[^:\/\*\_\-{}()a-zA-Z\d]#', $pattern))
         {
             //Invalid Pattern
             return false;
@@ -363,55 +499,49 @@ class Route{
             ':num'  =>  '[0-9]+',          //integers
             ':str'  =>  '[a-zA-Z]+',       //leters
             ':alpha'=>  '[a-zA-Z0-9]+',    //alphanumerics
-            ':any'  =>  '[a-zA-Z0-9_]+',   //any but slash
-            ':all'  =>  '[a-zA-Z0-9_/\.]*',//matches all usable chars :)
-            '{'     =>  '(',               //named start OK
-            '}'     =>  ')',               //named end OK
+            ':any'  =>  '[a-zA-Z0-9\_\-]+',   //any but slash
+            ':all'  =>  '[a-zA-Z0-9\_\-\/\\\.]*',//matches all usable chars :)
         );
+
+        $typeChars = "[a-z]+";
         
-        $allowedParamChars = '[a-zA-Z0-9\_]+';
+        $allowedParamChars = '[a-zA-Z0-9\_]+';    
         
-        // Turn "(/)" into "/?" DEPRECATED
-        //$pattern = preg_replace('#\(/\)#', '/?', $pattern);
-        
-        
-        //todo 0: Change '*' into '?' for making any parameter optional xD
+        //todo 0: Change '*' into '?' for making any parameter optional
         $pattern = preg_replace('#\*#', '?', $pattern);
 
-        
         //todo 1: required format {parameter:type}
         
         //todo 1.1: replace {parameter} with {parameter:any} DONE
         $pattern = preg_replace(
-            '/\{(' . $allowedParamChars . ')}/', // Replace "{parameter}"
-            '{$1:any}'                        , // with "{parameter:any}"
+            '#\{(' . $allowedParamChars . ')\}#',
+            '{$1:any}',
             $pattern
         );
-        
         
         //todo 1.2: replace {:type} with {type:type} DONE
         $pattern = preg_replace(
-            '/\{:(' . $allowedParamChars . ')}/', // Replace "{:type}"
-            '{$1:$1}'                          , // with "{type:type}"
-            $pattern
-        );       
-        
-        
-        //todo 2: replace {parameter:type} with {?<parameter>:type} DONE
-        $pattern = preg_replace(
-            '/\{(' . $allowedParamChars . ')/', // Replace "{parameter"
-            '{?P<$1>'                        , // with "{?P<parameter>"
+            '#/\{:(' . $allowedParamChars . ')\}#',
+            '{$1:$1}',
             $pattern
         );
         
+        //todo 2: replace {parameter:type} with (?P<parameter>:type) DONE
+        $pattern = preg_replace(
+            '#\{(' . $allowedParamChars . '):('.$typeChars.')\}#',
+            '(?P<$1>:$2)',
+            $pattern
+        );
         
-        //todo 3: replace {?P<parameter>:type} with {?P<parameter>[chars]} DONE
-        $searches = array_keys($chars);
-        $replaces = array_values($chars);
+        //todo 3: replace (?P<parameter>:type) with {?P<parameter>[chars]} DONE
+        $pattern = str_replace(array_keys($chars), array_values($chars), $pattern);
         
-        $pattern = str_replace($searches, $replaces, $pattern);
-        
-        $final = "#^" . $pattern . "$#Du";
+        //$final = "#^" . $pattern . "$#Du";
+
+        //testing from: https://github.com/daveh/php-mvc/ but use # instead
+        $final = '#^' . $pattern . '$#i';
+
+        //echo "<textarea>$final</textarea><hr>";
         
         return $final;
     }
@@ -426,6 +556,17 @@ class Route{
     protected static function isClass($data)
     {
         return preg_match("#^[a-zA-Z].+@[a-zA-Z].+$#D", $data);
+    }
+
+    protected static function runFilter($name, $url)
+    {
+        //return isset(self::$filters[$name]) ? self::$filters[$name] : null;
+        return call_user_func(self::$filters[$name], $url);
+    }
+
+    protected static function getFilter($name)
+    {
+        return isset(self::$filters[$name]) ? self::$filters[$name] : null;
     }
 }
 
@@ -659,10 +800,10 @@ class Database{
         {
             $database = env("Database");
             
-            $host = $database[$dbconfig.".host"];
-            $user = $database[$dbconfig.".user"];
-            $pass = $database[$dbconfig.".pass"];
-            $name = $database[$dbconfig.".name"];
+            $host = $database[$dbconfig."_host"];
+            $user = $database[$dbconfig."_user"];
+            $pass = $database[$dbconfig."_pass"];
+            $name = $database[$dbconfig."_name"];
         
             self::$instances[$dbconfig] = new self($host,$user,$pass,$name);
         }

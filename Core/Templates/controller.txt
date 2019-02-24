@@ -4,6 +4,6 @@ namespace App\Controllers;
 
 use Core\Controller;
 
-class {{name}}Controller extends Controller{
+class {{name}}Controller extends {{extends}}Controller{
     
 }

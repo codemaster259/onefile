@@ -15,7 +15,7 @@ use Core\View;
 class PanelController extends LayoutController{
        
     public function __pre(){
-        
+    
         SecureService::checkLogin();
         
         $this->layout = "base/layout_panel.php";
@@ -51,7 +51,6 @@ class PanelController extends LayoutController{
     
     public function administrar_proyectos()
     {
-        
         return  View::make("panel/manager/projects.php");
     }
     

@@ -1,10 +1,11 @@
 <?php
 
 use Core\Block;
-use Core\Env;
+use Core\Env as EnvClass;
 use Core\Helper;
 use Core\Session;
-use Core\View;
+use Core\View as ViewClass;
+use Core\FileSystem;
 
 
 /**
@@ -16,22 +17,22 @@ use Core\View;
  */
 function env($key, $def = null)
 {
-    return Env::get($key, $def);
+    return EnvClass::get($key, $def);
 }
 
-function view($_path, $_data = []){
-    
-    return View::make($_path, $_data);
+function view($_path, $_data = [])
+{
+    return ViewClass::make($_path, $_data);
 }
 
-function session_get($key, $def = null){
-    
+function session_get($key, $def = null)
+{
     return Session::get($key, $def);
 }
 
-function is_INT_MAX($val)
+function session_exists($key)
 {
-    return $val == PHP_INT_MAX;
+    return Session::exists($key);
 }
 
 function block_open($name)
@@ -53,3 +54,22 @@ function debug($data)
 {
     Helper::debug($data);
 }
+
+/*
+function import($stringClass)
+{
+    $className = "\\".str_replace(".", "\\", $stringClass);
+
+    if(!class_exists($className))
+    {
+        FileSystem::autoload($className);
+    }
+}
+
+/*
+
+//USAGE:
+import("App.Services.ApiService");
+
+echo ApiService::class;
+//*/

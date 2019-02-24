@@ -132,7 +132,6 @@
 
         </div>
     </div>
-    <script>LOGGED = true;</script>
     <!-- Page Content -->
     <div id="page-wrapper">
         <div class="container-fluid">

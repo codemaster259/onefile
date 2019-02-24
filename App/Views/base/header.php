@@ -41,7 +41,11 @@
     <!-- jQuery v2.1.3-->
     <script src="assets/js/jquery.min.js"></script>
     
+    <?php if(session_exists("LOGGED")):?>
+    <script> var LOGGED = true;</script>
+    <?php else:?>
     <script> var LOGGED = false;</script>
+    <?php endif;?>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

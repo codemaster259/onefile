@@ -1,6 +1,6 @@
 <div class="container">
     <div class="row">
-        <div class="col-sm-6 automargin pt20">
+        <div class="max-500 automargin">
             <div class="login-panel panel panel-default panel-shadow">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-user-plus fa-fw"></i> Registrarse</h3>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="panel-footer text-center">
                     <!-- Change this to a button or input when using this as a form -->
-                    <button class="btn btn-success" id="registro_btn">Aceptar</button>
+                    <button class="btn btn-success" id="registro_btn">Registrarse!</button>
                 </div>
             </div>
         </div>

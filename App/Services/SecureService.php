@@ -9,6 +9,8 @@ class SecureService{
     
     public static function checkLogin()
     {
+        return 0;
+
         if(!self::checkSession())
         {
             Session::destroy();
@@ -20,6 +22,8 @@ class SecureService{
     
     public static function checkSession()
     {
+        return 0;
+
         if(!Session::exists("LOGGED"))
         {
             Session::destroy();

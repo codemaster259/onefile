@@ -120,12 +120,6 @@
                     <a href="inicio"><i class="fa fa-dashboard fa-fw"></i> Inicio</a>
                 </li>
                 <li>
-                    <a href="administrar"><i class="fa fa-bar-chart-o fa-fw"></i> Administrar</a>
-                </li>
-                <li>
-                    <a href="tareas"><i class="fa fa-tasks fa-fw"></i> Tareas</a>
-                </li>
-                <li>
                     <a href="perfil"><i class="fa fa-user fa-fw"></i> Perfil</a>
                 </li>
             </ul>

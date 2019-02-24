@@ -318,7 +318,7 @@ function load_user_info()
         {
             var userdata = response.data;
             
-            $("#info_username").html(userdata.name + " ("+userdata.username+")");
+            $("#info_username").html(userdata.nombre + " ("+userdata.username+")");
         }
         
         if(response.codigo == 30)

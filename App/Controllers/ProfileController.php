@@ -25,10 +25,10 @@ class ProfileController extends Controller{
     {
         $user_id = Session::get("USER_ID");
         
-        $name = Request::post("name");
-        $lastname = Request::post("lastname");
+        $nombre = Request::post("nombre");
+        $apellido = Request::post("apellido");
         
-        $update = UsersModel::updateUser($user_id, $name, $lastname);
+        $update = UsersModel::updateUser($user_id, $nombre, $apellido);
         
         if(!$update)
         {

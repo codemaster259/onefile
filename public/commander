@@ -14,6 +14,7 @@ Core\FileSystem::autoload();
 use Core\Commander;
 use Core\FileSystem;
 use Core\Env;
+use Core\Password;
 
 //load env.ini file
 Env::fromINI(CORE_ROOT."env.ini");
@@ -184,5 +185,6 @@ Commander::addCommand("test", function($args = []){
 
     debug(Commander::parseParameters($args, $parameters));
 });
+//print_r(Password::encrypt("1234"));
 
 Commander::run($argv);

@@ -11,7 +11,7 @@ use Core\Times;
 
 define("SESSION_TIMEOUT", 30 * Times::Minutes);
 
-Route::filter("ajax", function($url){
+Route::filter("ajax", function(){
 
     return Request::isAjax();
 
@@ -20,7 +20,7 @@ Route::filter("ajax", function($url){
     return Response::html("Filter: Must be AJAX!");
 });
 
-Route::filter("auth", function($url){
+Route::filter("auth", function(){
    
     if(!Session::exists("LOGGED"))
     {
@@ -77,10 +77,8 @@ if(env("APP.allowRegister", false))
 }
 
 //panel
-Route::add("/", 'App\Controllers\PanelController@index', ["auth"]);
+Route::add("/", 'App\Controllers\PanelController@inicio', ["auth"]);
 Route::add("/inicio", 'App\Controllers\PanelController@inicio', ["auth"]);
-Route::add("/administrar", 'App\Controllers\PanelController@administrar', ["auth"]);
-Route::add("/tareas", 'App\Controllers\PanelController@tareas', ["auth"]);
 Route::add("/perfil", 'App\Controllers\PanelController@perfil', ["auth"]);
 
 
@@ -95,26 +93,8 @@ if(env("APP.allowRegister", false))
 Route::add("/login_usuario", 'App\Controllers\AuthController@login_usuario');
 Route::add("/logout", 'App\Controllers\AuthController@logout');
 
-//usuarios
-Route::add("/usuarios_lista", 'App\Controllers\UserController@usuarios_lista', ["auth", "ajax"]);
 
 //perfil
 Route::add("/perfil_info", 'App\Controllers\ProfileController@perfil_info', ["auth", "ajax"]);
 Route::add("/perfil_cambiar_datos", 'App\Controllers\ProfileController@perfil_cambiar_datos', ["auth", "ajax"]);
 Route::add("/perfil_cambiar_password", 'App\Controllers\ProfileController@perfil_cambiar_password', ["auth", "ajax"]);
-
-//proyectos
-Route::add("/proyectos_lista", 'App\Controllers\ProjectController@proyectos_lista', ["auth", "ajax"]);
-Route::add("/proyectos_agregar", 'App\Controllers\ProjectController@proyectos_agregar', ["auth", "ajax"]);
-Route::add("/proyectos_editar", 'App\Controllers\ProjectController@proyectos_editar', ["auth", "ajax"]);
-Route::add("/proyectos_actualizar", 'App\Controllers\ProjectController@proyectos_actualizar', ["auth", "ajax"]);
-Route::add("/proyectos_eliminar", 'App\Controllers\ProjectController@proyectos_eliminar', ["auth", "ajax"]);
-
-//tareas
-Route::add("/tareas_lista", 'App\Controllers\TaskController@tareas_lista', ["auth", "ajax"]);
-Route::add("/tareas_agregar", 'App\Controllers\TaskController@tareas_agregar', ["auth", "ajax"]);
-Route::add("/tareas_editar", 'App\Controllers\TaskController@tareas_editar', ["auth", "ajax"]);
-Route::add("/tareas_actualizar", 'App\Controllers\TaskController@tareas_actualizar', ["auth", "ajax"]);
-Route::add("/tareas_eliminar", 'App\Controllers\TaskController@tareas_eliminar', ["auth", "ajax"]);
-Route::add("/tareas_usuario", 'App\Controllers\TaskController@tareas_usuario', ["auth", "ajax"]);
-Route::add("/tareas_usuario_asignar", 'App\Controllers\TaskController@tareas_usuario_asignar', ["auth", "ajax"]);

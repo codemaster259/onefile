@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
         <div class="max-500 automargin">
-            <div class="login-panel panel panel-default panel-shadow">
+            <div class="login-panel panel panel-black panel-shadow">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-sign-in fa-fw"></i> Iniciar Sesion</h3>
                 </div>
@@ -78,17 +78,17 @@ $(function(){
             return;
         }
 
-        if(!captcha)
-        {
-            mostrarNotificacion("warning","Estimado Usuario", "Debe ingresar las letras del captcha");
-            $("#captcha").addClass("invalid");
-            return;
-        }
-        
         if(!password)
         {
             mostrarNotificacion("warning","Estimado Usuario", "Debe ingresar una contraseña");
             $("#password").addClass("invalid");
+            return;
+        }
+
+        if(!captcha)
+        {
+            mostrarNotificacion("warning","Estimado Usuario", "Debe ingresar las letras del captcha");
+            $("#captcha").addClass("invalid");
             return;
         }
 

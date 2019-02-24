@@ -14,15 +14,15 @@ return [
     //DATABASE INFO
     "Database" => [
         //default settings -> Database::instance()->method()
-        "default.host" => "localhost",
-        "default.user" => "root",
-        "default.pass" => "root",
-        "default.name" => "tasker",
+        "default_host" => "localhost",
+        "default_user" => "root",
+        "default_pass" => "root",
+        "default_name" => "tasker",
         
         //optional settings -> Database::instance("DB2")->method()
-        "DB2.host" => "localhost",
-        "DB2.user" => "root",
-        "DB2.pass" => "root",
-        "DB2.name" => "tasker",
+        "DB2_host" => "localhost",
+        "DB2_user" => "root",
+        "DB2_pass" => "root",
+        "DB2_name" => "tasker",
     ],
 ];

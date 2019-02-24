@@ -14,11 +14,11 @@ class UsersModel{
             SELECT
             id as user_id,
             username,
-            name,
+            nombre,
             status
-            FROM users
+            FROM usuarios
             WHERE status = 1
-            AND (username LIKE :search OR name LIKE :search)
+            AND (username LIKE :search OR nombre LIKE :search)
             ORDER BY username ASC
             ";
         
@@ -33,7 +33,7 @@ class UsersModel{
             SELECT
             *,
             id as user_id
-            FROM users
+            FROM usuarios
             WHERE username = :username
             ";
         
@@ -55,7 +55,7 @@ class UsersModel{
             SELECT
             *,
             id as user_id
-            FROM users
+            FROM usuarios
             WHERE id = :user_id
             ";
         
@@ -76,7 +76,7 @@ class UsersModel{
         
         $sql = "
             INSERT INTO
-            users
+            usuarios
             (username, password) VALUES (:username, :password)";
         
         $create = Database::instance()->execute($sql, $fields, true);
@@ -89,15 +89,15 @@ class UsersModel{
         return false;
     }
     
-    public static function updateUser($user_id, $name, $lastname)
+    public static function updateUser($user_id, $nombre, $apellido)
     {
         $fields['user_id'] = $user_id;
-        $fields['name'] = $name;
-        $fields['lastname'] = $lastname;
+        $fields['nombre'] = $nombre;
+        $fields['apellido'] = $apellido;
                 
         $sql = "
-            UPDATE users
-            SET name = :name, lastname = :lastname, updated = NOW()
+            UPDATE usuarios
+            SET nombre = :nombre, apellido = :apellido, updated = NOW()
             WHERE id = :user_id";
         
         return Database::instance()->execute($sql, $fields);
@@ -109,7 +109,7 @@ class UsersModel{
         $fields['password'] = $password;
                 
         $sql = "
-            UPDATE users
+            UPDATE usuarios
             SET password = :password, updated = NOW()
             WHERE id = :user_id";
         

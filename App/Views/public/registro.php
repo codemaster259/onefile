@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
         <div class="max-500 automargin">
-            <div class="login-panel panel panel-default panel-shadow">
+            <div class="login-panel panel panel-black panel-shadow">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-user-plus fa-fw"></i> Registrarse</h3>
                 </div>

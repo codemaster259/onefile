@@ -440,6 +440,8 @@ class Route{
             return Response::html("<h1>Error:</h1><p>Pagina <b>{$url}</b> no encontrada (R)!</p>", 404);
         }
 
+        Request::url($url);
+
         //filters
         foreach($filters as $name)
         {
@@ -447,7 +449,7 @@ class Route{
 
             if($f)
             {
-                $pass = call_user_func($f['test'], $url);
+                $pass = call_user_func($f['test']);
 
                 if(!$pass)
                 {
@@ -572,6 +574,18 @@ class Route{
 
 
 class Request{
+
+    private static $url = null;
+
+    public static function url($url = null)
+    {
+        if(!$url)
+        {
+            return self::$url;
+        }
+        
+        self::$url = $url;
+    }
 
     public static function isPost()
     {

@@ -17,10 +17,10 @@
             </div>
             <div class="panel-body">
                 <div class="form-group">
-                    <input class="form-control" placeholder="Nombre" name="nombre" id="nombre" type="text" value="<?php echo $name;?>">
+                    <input class="form-control" placeholder="Nombre" name="nombre" id="nombre" type="text" value="<?php echo $nombre;?>">
                 </div>
                 <div class="form-group">
-                    <input class="form-control" placeholder="Apellido" name="apellido" id="apellido" type="text" value="<?php echo $lastname;?>">
+                    <input class="form-control" placeholder="Apellido" name="apellido" id="apellido" type="text" value="<?php echo $apellido;?>">
                 </div>
             </div>
             <div class="panel-footer text-center">
@@ -66,8 +66,8 @@ $(function(){
     {
         $(".invalid").removeClass("invalid");
 
-        var name = $("#nombre").val().trim();
-        var lastname = $("#apellido").val().trim();
+        var nombre = $("#nombre").val().trim();
+        var apellido = $("#apellido").val().trim();
 
         if(!nombre)
         {
@@ -89,8 +89,8 @@ $(function(){
             "url": getApiUrl("perfil_cambiar_datos"),
             "dataType": "json",
             "data": {
-                "name": name,
-                "lastname": lastname
+                "nombre": nombre,
+                "apellido": apellido
             },
             "beforeSend": function () {
                 showLoader();

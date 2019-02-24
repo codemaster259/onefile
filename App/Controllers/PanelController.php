@@ -21,49 +21,9 @@ class PanelController extends LayoutController{
         $this->layout = "base/layout_panel.php";
     }
     
-    public function index()
-    {
-        return View::make("panel/home/index.php");
-    }
-    
     public function inicio()
     {
-        $user_id = Session::get("USER_ID");
-        
-        $data['proyectos'] = ProjectsModel::getOwnProjects($user_id);
-        
-        $data['tareas'] = TasksModel::getTasksByUserId($user_id);
-        
-        return View::make("panel/index/index.php", $data);
-    }
-    
-    public function administrar()
-    {
-        $project_id = Request::query("project_id");
-        
-        if($project_id)
-        {
-            return $this->administrar_tareas();
-        }else{
-            return $this->administrar_proyectos();
-        }
-    }
-    
-    public function administrar_proyectos()
-    {
-        return  View::make("panel/manager/projects.php");
-    }
-    
-    public function administrar_tareas()
-    {
-        $data['project_id'] = Request::query("project_id");
-        
-        return  View::make("panel/manager/tasks.php", $data);
-    }
-    
-    public function tareas()
-    {
-        return View::make("panel/tasker/index.php");
+        return View::make("panel/home/index.php");
     }
     
     public function perfil()

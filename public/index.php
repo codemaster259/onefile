@@ -41,6 +41,3 @@ echo Route::match(PATH_INFO);
 
 if(Request::isAjax()){die();}
 
-//debug(env("App.allowRegister"));
-//debug(Env::get());
-//echo PATH_INFO;

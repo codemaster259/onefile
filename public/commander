@@ -24,6 +24,18 @@ Commander::addCommand("hello:world", function($args = []){
     print_r($args);
 });
 
+Commander::addCommand("bcrypt", function($args = []){
+    
+    $name = array_shift($args);
+
+    if(!$name)
+    {
+        die("Write a string");
+    }
+
+    echo Password::encrypt($name);
+});
+
 Commander::addCommand("view:create", function($args = []){
     
     $params = [
@@ -185,6 +197,5 @@ Commander::addCommand("test", function($args = []){
 
     debug(Commander::parseParameters($args, $parameters));
 });
-//print_r(Password::encrypt("1234"));
 
 Commander::run($argv);

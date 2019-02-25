@@ -81,6 +81,16 @@ class FileSystem{
     {
         return file_exists(self::$ROOT.$filename);
     }
+
+    public static function findFile($filename)
+    {
+        if(self::fileExists($filename))
+        {
+            return self::$ROOT.$filename;
+        }
+        
+        return null;
+    }
     
     public static function writeFile($filename, $data = "")
     {
@@ -348,7 +358,7 @@ class Env{
     
     public static function fromINI($file){
         
-        self::$env = parse_ini_file($file, true);
+        self::$env = parse_ini_file(FileSystem::findFile($file), true);
     }
     
     public static function fromPHP($file){

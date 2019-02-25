@@ -8,7 +8,7 @@ use Core\Env;
 use Core\Password;
 
 //load env.ini file
-Env::fromINI(CORE_ROOT."env.ini");
+Env::fromINI("env.ini");
 
 Commander::addCommand("hello:world", function($args = []){
     print_r("Hello World!");

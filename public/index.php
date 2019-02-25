@@ -18,7 +18,7 @@ define("PATH_INFO", Helper::PATH_INFO());
 define("CURRENT_URL", Helper::CURRENT_URL());
 
 //load env.ini file
-Env::fromINI(CORE_ROOT."env.ini");
+Env::fromINI("env.ini");
 
 //set default timezone
 date_default_timezone_set(env("APP.timezone", "America/Caracas"));

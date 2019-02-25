@@ -177,6 +177,16 @@
 {
     background-color: #337ab7;
 }
+
+.dropdown-menu>li>a:focus,
+.dropdown-menu>li>a:hover {
+    background: #eaeaea;
+}
+
+.nav>li>a:focus,
+.nav>li>a:hover{
+    background: #eaeaea;
+}
 /*NAVBAR*/
 
 /*PANEL*/

@@ -10,7 +10,7 @@
 </div>
 <!-- /.row -->
 <div class="row">
-    <div class="col-md-6 automargin">
+    <div class="max-500 automargin">
         <div class="panel panel-black panel-shadow ">
             <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-user fa-fw"></i> Datos del Usuario: <strong><?php echo $username;?></strong></h3>
@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6 automargin">
+    <div class="max-500 automargin">
         <div class="panel panel-black panel-shadow ">
             <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-key fa-fw"></i> Actualizar Contraseña</h3>
@@ -58,6 +58,7 @@ $(function(){
     $("#userdata_btn").on("click", function(){
         perfil_cambiar_datos();
     });
+    
     $("#password_btn").on("click", function(e){
         perfil_cambiar_password();
     });

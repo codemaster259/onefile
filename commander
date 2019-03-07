@@ -21,6 +21,7 @@ Commander::addCommand("test", function($args = []){
         "o",
         "name:",
     ];
+    echo env("App.db_scheme");
 
     debug(Commander::parseParameters($args, $parameters));
 });

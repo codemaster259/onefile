@@ -838,19 +838,22 @@ class Database{
      */
     public static function instance($dbconfig = "default"){
 
-        if(!isset(self::$instances[$dbconfig]))
+        $db_scheme = env("App.db_scheme", $dbconfig);
+        //die($db_scheme);
+
+        if(!isset(self::$instances[$db_scheme]))
         {
             $database = env("Database");
             
-            $host = $database[$dbconfig."_host"];
-            $user = $database[$dbconfig."_user"];
-            $pass = $database[$dbconfig."_pass"];
-            $name = $database[$dbconfig."_name"];
+            $host = $database[$db_scheme."_host"];
+            $user = $database[$db_scheme."_user"];
+            $pass = $database[$db_scheme."_pass"];
+            $name = $database[$db_scheme."_name"];
         
-            self::$instances[$dbconfig] = new self($host,$user,$pass,$name);
+            self::$instances[$db_scheme] = new self($host,$user,$pass,$name);
         }
         
-        return self::$instances[$dbconfig];
+        return self::$instances[$db_scheme];
     }
     
     public function __construct($host,$user,$pass,$name)
@@ -865,9 +868,12 @@ class Database{
         
         try{
             
-            $this->pdo = new PDO("mysql:dbname={$this->name};host={$this->host}", $this->user, $this->pass, []);
+            $this->pdo = new PDO("mysql:host={$this->host}", $this->user, $this->pass, []);
         
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+            $this->pdo->exec("use $this->name");
         
         }catch(PDOException $e){
             

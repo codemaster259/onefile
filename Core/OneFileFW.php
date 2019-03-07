@@ -62,7 +62,25 @@ class FileSystem{
     
     public static function requireFile($filename, $once = false)
     {
-        return ($once) ? require_once self::$ROOT.$filename : require self::$ROOT.$filename;
+        $file = self::$ROOT.$filename;
+        return ($once) ? require_once $file : require $file;
+    }
+
+    public static function includeFile($filename, $optional = false)
+    {
+        $file = self::findFile($filename);
+
+        if(!$file)
+        {
+            if(!$optional)
+            {
+                echo "Archivo {$filename} no existe";
+            }
+
+            return null;
+        }
+
+        return include $file;
     }
 
     public static function read($filename, $callback = null){
@@ -1244,6 +1262,300 @@ class Captcha{
         header('Content-type: image/png');
         imagepng($image);
         imagedestroy($image);
+    }
+}
+
+/** TABLES AND COLUMNS */
+class ColumnMaker{
+
+    const TYPE_INT = "int";
+    const TYPE_BIGINT = "bigint";
+    const TYPE_VARCHAR = "varchar";
+    const TYPE_TEXT = "text";
+    const TYPE_LONGTEXT = "longtext";
+    const TYPE_DATE = "date";
+    const TYPE_DATETIME = "datetime";
+    const TYPE_TIMESTAMP = "timestamp";
+
+    public static function make($name, $type, $size = 10)
+    {
+        return new self($name, $type, $size);
+    }
+
+    public $name;
+
+    protected function __construct($name, $type, $size)
+    {
+        $this->name = $name;
+        $this->type = $type;
+        $this->size = $size;
+    }
+
+    public $type = self::TYPE_INT;
+
+    public function type($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public $size = self::TYPE_INT;
+
+    public function size($size)
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+    public $nullable = false;
+
+    public function nullable($value = true)
+    {
+        $this->nullable = $value;
+        return $this;
+    }
+
+    public $default = null;
+
+    public function default($value = null)
+    {
+        $this->default = $value;
+        return $this;
+    }
+
+    public $current_timestamp = false;
+
+    public function timestamp($value = true)
+    {
+        $this->current_timestamp = $value;
+        return $this;
+    }
+
+    public $autoIncrement = false;
+
+    public function autoIncrement($value = true)
+    {
+        $this->autoIncrement = $value;
+        $this->primary();
+        return $this;
+    }
+
+    public $primary = false;
+
+    public function primary($value = true)
+    {
+        $this->primary = $value;
+        return $this;
+    }
+
+    public $unique = false;
+
+    public function unique($value = true)
+    {
+        $this->unique = $value;
+        return $this;
+    }
+
+    public $index = false;
+
+    public function index($value = true)
+    {
+        $this->index = $value;
+        return $this;
+    }
+}
+
+class TableMaker{
+
+    protected $sql = null;
+
+    protected $name = null;
+
+    protected $columns = [];
+
+    public $ifNotExists = false;
+    public $engine = "InnoDB";
+    public $charset = 'utf8';
+    public $collation = 'utf8_spanish_ci';
+    public $autoIncrement = 1;
+
+    const ENGINE_INNODB = "InnoDB";
+    const ENGINE_MYISAM = "MyISAM";
+
+    public static function createTable($name, callable $builder)
+    {
+        $table = new self($name);
+        call_user_func($builder,$table);
+        return $table->buildQuery();
+    }
+
+    protected function buildQuery()
+    {
+        $output = "CREATE TABLE ".(($this->ifNotExists) ? "IF NOT EXISTS " : "")."`{$this->name}` (".PHP_EOL;
+
+        $primary = null;
+        $unique = null;
+        $index = null;
+        $comma = "";
+
+        
+        /** @var ColumnMaker $column */
+        foreach($this->columns as $column)
+        {
+            $col = "  `{$column->name}` {$column->type}";
+            $col .= ($column->size != 0) ? "({$column->size})" : "";
+
+            if(!$column->nullable)
+            {
+                $col .= " NOT NULL";
+            }
+            
+            if($column->default != null)
+            {
+                $col .= " DEFAULT '{$column->default}'";
+            }
+            
+            if($column->autoIncrement)
+            {
+                $col .= " AUTO_INCREMENT";
+            }
+
+            if($this->collation != null)
+            {
+                $col .= " COLLATE '{$this->collation}'";
+            }
+
+            if($column->primary)
+            {
+                $primary = $column->name;
+            }
+
+            if($column->primary)
+            {
+                $primary = $column->name;
+            }
+
+            if($column->index)
+            {
+                $index = $column->name;
+            }
+
+            $output .= $comma.$col;
+
+            $comma = ",".PHP_EOL;
+        }
+
+        if($primary)
+        {
+            $output .= ",".PHP_EOL."  PRIMARY KEY(`{$primary}`)";
+        }
+        
+        if($unique)
+        {
+            $output .= ",".PHP_EOL."  UNIQUE INDEX {$unique} ({$unique})";
+        }
+        
+        if($index)
+        {
+            $output .= ",".PHP_EOL."  INDEX {$index} ({$index})";
+        }
+        
+        
+        $output .= PHP_EOL.") ENGINE={$this->engine}"; 
+        
+        if($this->charset != null)
+        {
+            $output .= " DEFAULT CHARSET={$this->charset}";
+        }
+        
+        if($this->collation != null)
+        {
+            $output .= " COLLATE='{$this->collation}'";
+        }
+        
+        if($this->autoIncrement != 1)
+        {
+            $output .= " AUTO_INCREMENT={$this->autoIncrement}";
+        }
+        
+        return $output.";";
+    }
+
+    protected function __construct($name)
+    {
+        $this->name = $name;
+    }
+    
+    /**
+     * @return  ColumnMaker
+     */
+    public function integer($name, $size = 10)
+    {
+        $this->columns[$name] = ColumnMaker::make($name, Columnmaker::TYPE_INT, $size);
+        return $this->columns[$name];
+    }
+    
+    /**
+     * @return  ColumnMaker
+     */
+    public function bigint($name, $size = 10)
+    {
+        $this->columns[$name] =  ColumnMaker::make($name, Columnmaker::TYPE_BIGINT, $size);
+        return $this->columns[$name];
+    }
+
+    /**
+     * @return  ColumnMaker
+     */
+    public function string($name, $size = 10)
+    {
+        $this->columns[$name] =  ColumnMaker::make($name, Columnmaker::TYPE_VARCHAR, $size);
+        return $this->columns[$name];
+    }
+
+    /**
+     * @return  ColumnMaker
+     */
+    public function date($name)
+    {
+        $this->columns[$name] =  ColumnMaker::make($name, Columnmaker::TYPE_DATE, 0);
+        return $this->columns[$name];
+    }
+
+    /**
+     * @return  ColumnMaker
+     */
+    public function datetime($name)
+    {
+        $this->columns[$name] =  ColumnMaker::make($name, Columnmaker::TYPE_DATETIME, 0);
+        return $this->columns[$name];
+    }
+
+    /**
+     * @return  ColumnMaker
+     */
+    public function timestamp($name)
+    {
+        $this->columns[$name] =  ColumnMaker::make($name, Columnmaker::TYPE_TIMESTAMP, 0);
+        return $this->columns[$name];
+    }
+
+    /**
+     * @return  ColumnMaker
+     */
+    public function text($name)
+    {
+        $this->columns[$name] =  ColumnMaker::make($name, Columnmaker::TYPE_TEXT, 0);
+        return $this->columns[$name];
+    }
+
+    /**
+     * @return  ColumnMaker
+     */
+    public function longtext($name)
+    {
+        $this->columns[$name] =  ColumnMaker::make($name, Columnmaker::TYPE_LONGTEXT, 0);
+        return $this->columns[$name];
     }
 }
 

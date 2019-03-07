@@ -10,9 +10,25 @@ use Core\Password;
 //load env.ini file
 Env::fromINI("env.ini");
 
-Commander::addCommand("hello:world", function($args = []){
-    print_r("Hello World!");
-    print_r($args);
+if(FileSystem::fileExists("App/Config/commands.php"))
+{
+    FileSystem::requireFile("App/Config/commands.php");
+}
+
+Commander::addCommand("test", function($args = []){
+
+    $parameters = [
+        "o",
+        "name:",
+    ];
+
+    debug(Commander::parseParameters($args, $parameters));
+});
+
+
+Commander::addCommand("migrate", function($args = []){
+
+    FileSystem::requireFile("App/Config/migrate.php");
 });
 
 Commander::addCommand("bcrypt", function($args = []){
@@ -24,7 +40,7 @@ Commander::addCommand("bcrypt", function($args = []){
         die("Write a string");
     }
 
-    echo Password::encrypt($name);
+    echo "\n".$name." => ".Password::encrypt($name)."\n";
 });
 
 Commander::addCommand("view:create", function($args = []){
@@ -175,18 +191,6 @@ Commander::addCommand("model:create", function($args = []){
     }else{
         print_r("File {$name} can't be created!");
     }
-});
-
-Commander::addCommand("test", function($args = []){
-
-    $parameters = [
-        "o",
-        "c",
-        "name:",
-        "extends:",
-    ];
-
-    debug(Commander::parseParameters($args, $parameters));
 });
 
 Commander::run($argv);

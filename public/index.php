@@ -23,7 +23,7 @@ Env::fromINI("env.ini");
 //set default timezone
 date_default_timezone_set(env("APP.timezone", "America/Caracas"));
 
-FileSystem::requireFile("App/routes.php");
+FileSystem::requireFile("App/Config/routes.php");
 
 echo Route::match(PATH_INFO);
 

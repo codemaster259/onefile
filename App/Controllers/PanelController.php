@@ -23,7 +23,7 @@ class PanelController extends LayoutController{
     
     public function inicio()
     {
-        return View::make("panel/home/index.php");
+        return View::make("panel/home/index.php", ['nombre' => 'samuel']);
     }
     
     public function perfil()

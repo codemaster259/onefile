@@ -51,7 +51,7 @@ Route::filter("auth", function(){
 
 //Routes
 
-Route::add("/hello/{name:any}*", function(){
+Route::add("/hello/{name:num}*", function(){
     debug(Request::param());
     $name = Request::param("name", "guest");
     return Response::html("Hello {$name}!");
@@ -71,7 +71,7 @@ Route::add("/captcha", function(){
 Route::add("/login", 'App\Controllers\PublicController@login');
 
 //registro
-if(env("APP.allowRegister", false))
+if(env("APP.allowRegister", true))
 {
     Route::add("/registro", 'App\Controllers\PublicController@registro');
 }
@@ -84,7 +84,7 @@ Route::add("/perfil", 'App\Controllers\PanelController@perfil', ["auth"]);
 
 /*API*/
 //registro
-if(env("APP.allowRegister", false))
+if(env("APP.allowRegister", true))
 {
     Route::add("/registrar_usuario", 'App\Controllers\AuthController@registrar_usuario');
 }
@@ -98,3 +98,15 @@ Route::add("/logout", 'App\Controllers\AuthController@logout');
 Route::add("/perfil_info", 'App\Controllers\ProfileController@perfil_info', ["auth", "ajax"]);
 Route::add("/perfil_cambiar_datos", 'App\Controllers\ProfileController@perfil_cambiar_datos', ["auth", "ajax"]);
 Route::add("/perfil_cambiar_password", 'App\Controllers\ProfileController@perfil_cambiar_password', ["auth", "ajax"]);
+Route::add("/usuarios_lista", 'App\Controllers\UserController@usuarios_lista');
+
+Route::add("/negocio", 'App\Controllers\BusinesController@inicio');
+
+Route::namespace("/admin", function(){
+    Route::add("/", 'App\Controllers\BusinesController@inicio');
+    Route::add("/test", 'App\Controllers\BusinesController@test');
+});
+
+debug(Route::all());
+Response::text("");
+die();

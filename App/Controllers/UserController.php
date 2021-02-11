@@ -21,9 +21,9 @@ class UserController extends Controller{
     
     public function usuarios_lista()
     {
-        $username = Request::post("username");
+        $username = Request::query("username");
         
-        $userlist = UsersModel::searchUsersByUsername($username);
+        $userlist = UsersModel::getUserByUsername($username);
         
         return Response::json([
             'codigo' => 10,

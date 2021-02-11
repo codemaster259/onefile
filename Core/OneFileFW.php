@@ -420,8 +420,28 @@ class Route{
     private static $routes = [];
     private static $filters = [];
 
+    const DEFAUL_NAMESPACE = "/";
+
+    private static $namespace = "/";
+
+    public static function all()
+    {
+        return self::$routes;
+    }
+
+    public static function namespace($namespace, $callback)
+    {
+        self::$namespace = "/".trim($namespace, "/");
+
+        $callback();
+
+        self::$namespace =  self::DEFAUL_NAMESPACE;
+    }
+
     public static function add($url, $data, $filters = [])
     {
+        $url = "/".trim(self::$namespace.$url, "/");
+
         $pattern = self::makePattern($url);
 
         if($pattern)
@@ -1247,10 +1267,13 @@ class Captcha{
         $textcolors[] = imagecolorallocate($image, 255, 255, 255);
 
         //red
-        //$textcolors['red'] = imagecolorallocate($image, 255, 0, 0);
+        $textcolors[] = imagecolorallocate($image, 255, 0, 0);
 
         //blue
-        //$textcolors['blue'] = imagecolorallocate($image, 0, 0, 255);
+        $textcolors[] = imagecolorallocate($image, 0, 0, 255);
+
+        //green
+        $textcolors[] = imagecolorallocate($image, 0, 255, 0);
         
         for($i = 0; $i < $string_length; $i++)
         {

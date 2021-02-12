@@ -71,7 +71,7 @@ Route::add("/captcha", function(){
 Route::add("/login", 'App\Controllers\PublicController@login');
 
 //registro
-if(env("APP.allowRegister", true))
+if(env("App.allowRegister", true))
 {
     Route::add("/registro", 'App\Controllers\PublicController@registro');
 }
@@ -84,7 +84,7 @@ Route::add("/perfil", 'App\Controllers\PanelController@perfil', ["auth"]);
 
 /*API*/
 //registro
-if(env("APP.allowRegister", true))
+if(env("App.allowRegister", true))
 {
     Route::add("/registrar_usuario", 'App\Controllers\AuthController@registrar_usuario');
 }
@@ -102,11 +102,11 @@ Route::add("/usuarios_lista", 'App\Controllers\UserController@usuarios_lista');
 
 Route::add("/negocio", 'App\Controllers\BusinesController@inicio');
 
-Route::namespace("/admin", function(){
+Route::group("/admin", function(){
     Route::add("/", 'App\Controllers\BusinesController@inicio');
     Route::add("/test", 'App\Controllers\BusinesController@test');
 });
 
-debug(Route::all());
-Response::text("");
-die();
+//debug(Route::all());
+//Response::text("");
+//die();

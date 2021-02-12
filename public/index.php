@@ -23,7 +23,7 @@ define("CURRENT_URL", Helper::CURRENT_URL());
 Env::fromINI("env.ini");
 
 //set default timezone
-date_default_timezone_set(env("APP.timezone", "America/Caracas"));
+date_default_timezone_set(env("App.timezone", "America/Caracas"));
 
 FileSystem::requireFile("App/Config/routes.php");
 

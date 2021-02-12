@@ -372,7 +372,7 @@ class Password{
 
 class Env{
     
-    protected static $env = array();
+    public static $env = array();
     
     public static function fromINI($file){
         
@@ -384,33 +384,47 @@ class Env{
         self::$env = FileSystem::requireFile($file, true);
     }
     
-    public static function get($key = null, $def = null){
-        
+    public static function get($key = null, $def = null)
+    {   
+        //echo "search for $key in <br>";
+
         if(!$key)
         {
             return self::$env;
         }
         
-        return self::deep_env($key, $def);
+        return self::deep_env(self::$env, $key, $def);
     }
 
-    protected static function deep_env($key, $def = null)
+    protected static function deep_env($list, $key, $def = null)
     {
-        $temp = explode(".", $key);
+        //get parts
+        $temp = explode(".", $key, 2);
 
-        $kv = self::$env;
+        $index = $temp[0];
+        $rest = (count($temp) > 1) ? $temp[1] : "";
 
-        foreach($temp as $subkey)
+        //echo "$index: ".(array_key_exists($index, $list) ? 'si': 'no')."<br>";
+
+        //if exists in array
+        if(array_key_exists($index, $list))
         {
-            if(!isset($kv[$subkey]))
+            //echo "exists<br>";
+            //if is array
+            if(is_array($list[$index]))
             {
-                return $def;
+                //is array, go deep
+                return self::deep_env($list[$index], $rest, $def);
+            }else{
+                //not array
+                return $list[$index];
             }
 
-            $kv = $kv[$subkey];
+        }else{
+            //echo "not in array, default<br>";
+            //not found
+            return $def;
         }
-
-        return $kv;
     }
 }
 
@@ -420,27 +434,27 @@ class Route{
     private static $routes = [];
     private static $filters = [];
 
-    const DEFAUL_NAMESPACE = "/";
+    const DEFAULT_GROUP = "/";
 
-    private static $namespace = "/";
+    private static $group = "/";
 
     public static function all()
     {
         return self::$routes;
     }
 
-    public static function namespace($namespace, $callback)
+    public static function group($group, $callback)
     {
-        self::$namespace = "/".trim($namespace, "/");
+        self::$group = "/".trim($group, "/");
 
         $callback();
 
-        self::$namespace =  self::DEFAUL_NAMESPACE;
+        self::$group =  self::DEFAULT_GROUP;
     }
 
     public static function add($url, $data, $filters = [])
     {
-        $url = "/".trim(self::$namespace.$url, "/");
+        $url = "/".trim(self::$group.$url, "/");
 
         $pattern = self::makePattern($url);
 
@@ -736,7 +750,7 @@ class Response{
     {
         $this->setContent($content);
         $this->setStatus($status);
-        if(env("APP.discover", false))
+        if(env("App.discover", false))
         {
             $this->setHeader("X-Developed-With", OneFileFW::FRAMEWORK_NAME." - ".OneFileFW::FRAMEWORK_VERSION);
             $this->setHeader("X-Developed-By", OneFileFW::FRAMEWORK_MAKER);
@@ -1259,13 +1273,14 @@ class Captcha{
         }
         
         $textcolors = [];
-
+        
         //black
         $textcolors[] = imagecolorallocate($image, 0, 0, 0);
         
         //white
         $textcolors[] = imagecolorallocate($image, 255, 255, 255);
 
+        /*
         //red
         $textcolors[] = imagecolorallocate($image, 255, 0, 0);
 
@@ -1274,6 +1289,7 @@ class Captcha{
 
         //green
         $textcolors[] = imagecolorallocate($image, 0, 255, 0);
+        */
         
         for($i = 0; $i < $string_length; $i++)
         {
